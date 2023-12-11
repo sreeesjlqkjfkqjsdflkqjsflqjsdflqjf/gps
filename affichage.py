@@ -1,17 +1,20 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from math import sqrt
 
-
+altitudeDuSatellite = 20200/6400
 
 def placepoint(x, y, z, ax):
     ax.scatter(x, y, z, c='Blue', marker = 'P', s = 100)
 
 def SatelliteAuPif(rng):
-    rng.
+    lam, phi = *np.pi*rng.random(1, 2)
+    return altitudeDuSatellite*np.array([lam*phi, phi, ])
+
+
 
 def main():
-
+    
+    rng = np.random.default_rng(seed=1337)
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
     ax.set_axis_off()

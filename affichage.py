@@ -29,8 +29,8 @@ def _set_axes_radius(ax, origin, radius):
 
 
 
-def placepoint(point, ax):
-    ax.scatter(point[0], point[1], point[2], c='Blue', marker = 'P', s = 100)
+def placepoint(point, ax, color='Blue'):
+    ax.scatter(point[0], point[1], point[2], c=color, marker = 'P', s = 100)
 
 def SatelliteAuPif(rng):
     lam, phi = 2*np.pi*rng.random()+np.pi, 2*np.pi*rng.random()+np.pi

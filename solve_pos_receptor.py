@@ -8,7 +8,7 @@ LIGHT_SPEED = 3.e8
 COS_TH_MAX = RT / SAT_DISTANCE
 
 
-def solve_receptor_position(s1, s2, s3, s4, r1, r2, r3, r4, epsilon=1e0):
+def solve_receptor_position(s1, s2, s3, s4, rho1, rho2, rho3, rho4, epsilon=1e0):
     phi_sat, theta_sat = np.array((s1, s2, s3, s4)).transpose()
     x_sat = SAT_DISTANCE * np.cos(phi_sat) * np.sin(theta_sat)
     y_sat = SAT_DISTANCE * np.sin(phi_sat) * np.sin(theta_sat)
@@ -16,7 +16,7 @@ def solve_receptor_position(s1, s2, s3, s4, r1, r2, r3, r4, epsilon=1e0):
     # print(x_sat / RT)
     # print(y_sat / RT)
     # print(z_sat / RT)
-    r_x, r_y, r_z, r_t = 0., 0., 0., 0.
+    r_x, r_y, r_z, r_t = 0., 0., RT, 0.
 
     iterating = True
 
@@ -24,7 +24,7 @@ def solve_receptor_position(s1, s2, s3, s4, r1, r2, r3, r4, epsilon=1e0):
         try:
             print('receptor position', f'{r_x = :.3e}, {r_y:.3e}, {r_z:.3e}, {r_t:.3e}')
             r = ((x_sat - r_x) ** 2 + (y_sat - r_y) ** 2 + (z_sat - r_z) ** 2) ** .5
-            print(f'{r = }')
+            # print(f'{r = }')
             ax = (x_sat - r_x) / r
             ay = (y_sat - r_y) / r
             az = (z_sat - r_z) / r
@@ -36,17 +36,21 @@ def solve_receptor_position(s1, s2, s3, s4, r1, r2, r3, r4, epsilon=1e0):
                 [ax[3], ay[3], az[3], 1.]
             ])
             H_1 = np.linalg.inv(H)
-            d_rho = r + r_t - np.array((r1, r2, r3, r4))
-            dx = np.einsum('ik,k->i', H_1, -d_rho)
-            print(f'{dx = }')
-            r_x, r_y, r_z, r_t = dx + (r_x, r_y, r_z, r_t)
+            d_rho = r + r_t - np.array((rho1, rho2, rho3, rho4))
+            # print(f'{d_rho = }')
+            dx = H_1 @ d_rho
+            # dx = np.einsum('ik,k->i', H_1, d_rho)
+            # print(f'{dx = }')
+            r_x, r_y, r_z, r_t = dx * (1, 1, 1, -1) + (r_x, r_y, r_z, r_t)
             iterating = np.sum(dx ** 2) ** .5 > epsilon
         except Exception:
             iterating = False
-    r = (r_x ** 2 + r_y ** 2 + r_z ** 2)
-    print(f'{r / RT = }')
+    print('Final receptor position', f'{r_x = :.3e}, {r_y:.3e}, {r_z:.3e}, {r_t:.3e}')
+    r = (r_x ** 2 + r_y ** 2 + r_z ** 2) ** .5
+    print(f'{r / RT= }')
+    r_phi = np.arctan2(r_x, r_y)
     r_theta = np.arccos(r_z / r)
-    r_phi = np.arcsin(r_x / r / np.sin(r_theta)) * (2 * (r_y > 0) - 1)
+    # r_phi = np.arccos(r_x / r / np.sin(r_theta)) * (2 * (r_y > 0) - 1)
     return r_phi, r_theta, r - RT, r_t / (-LIGHT_SPEED)
 
 
@@ -61,15 +65,17 @@ def spheric_to_cartesian(phi, theta, rho):
     return rho * np.array((cos(phi) * sin(theta), sin(phi) * sin(theta), cos(theta)))
 
 
-def make_distances(*satellites, dt=0.):
-    sat_arr = np.array(satellites)
+def make_distances(s1, s2, s3, s4, dt=0.):
+    sat_arr = np.array((s1, s2, s3, s4))
     phi, theta = sat_arr[:, 0], sat_arr[:, 1]
 
     # shape: (4, 3)
     sat_pos = SAT_DISTANCE * np.array(
-        [np.sin(theta) * np.cos(phi), np.sin(theta) * np.cos(phi), np.cos(theta)]
+        [np.sin(theta) * np.cos(phi), np.sin(theta) * np.sin(phi), np.cos(theta)]
     ).transpose()
-    return np.sum((sat_pos - np.array((0., 0., RT))[None, :]) ** 2, axis=1) ** .5 + dt
+    print(f'{sat_pos / RT = }')
+    print((np.sum((sat_pos - np.array((0., 0., RT))[None, :]) ** 2, axis=1) ** .5 + LIGHT_SPEED * dt) * 1e-6)
+    return np.sum((sat_pos - np.array((0., 0., RT))[None, :]) ** 2, axis=1) ** .5 + LIGHT_SPEED * dt
 
 
 def test():

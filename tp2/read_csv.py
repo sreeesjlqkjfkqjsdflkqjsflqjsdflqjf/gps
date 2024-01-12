@@ -31,8 +31,8 @@ _float = lambda x: float(str.lower(x).replace(',', '.'))
 
 def get_ephemeride():
     data = read_csv('../csvs/Ephemerides1.csv')
-    data[1:-1] = map(lambda line: [_float(x) for x in line], data[1:-1])
-    return data[:-1]
+    data[:] = map(lambda line: [_float(x) for x in line], data[1:-1])
+    return np.array(data).swapaxes(0, 1)
 
 
 def __eph(eph):

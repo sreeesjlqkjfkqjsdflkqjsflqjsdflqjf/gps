@@ -1,0 +1,4 @@
+question 4 :
+paramètres : orbitaux
+             temporels
+             pertubationnels

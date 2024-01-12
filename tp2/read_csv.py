@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def fuse_values(line: list[str]):
     res, value = [], []
     for value_part in line:
@@ -32,6 +35,11 @@ def get_ephemeride():
     return data[:-1]
 
 
+def __eph(eph):
+    eph = np.array(np.array(eph[1:]).swapaxes(0, 1))
+    PRN, TOE, Ecc, I0, OMEGA0, omega, M0, idot, OMEGAdot, deltan, cuc, cus, crc, crs, cic, cis, sqrt_a, af0, af1, af2, toc, tgd = eph
+
+
 def get_pseudodist():
     data = read_csv('../csvs/Pseudodist1.csv')
     data[:] = map(lambda line: [_float(x) for x in line], data[:-1])
@@ -39,4 +47,4 @@ def get_pseudodist():
 
 
 if __name__ == '__main__':
-    pass
+    __eph(get_ephemeride())

@@ -1,16 +1,8 @@
 """
 -------------------------------------------------------------------------
 
-Fonction
-pour
-convertir
-les
-coordonnées
-géographiques(en
-degrés)
-%en
-coordonnées
-cartésiennes
+Fonction pour convertir les coordonnées géographiques (en degrés) en
+coordonnées cartésiennes
 
 -------------------------------------------------------------------------
 """

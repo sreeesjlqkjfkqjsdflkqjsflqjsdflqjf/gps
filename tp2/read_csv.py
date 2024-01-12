@@ -23,13 +23,20 @@ def read_csv(file):
     return list(lines)
 
 
+_float = lambda x: float(str.lower(x).replace(',', '.'))
+
+
 def get_ephemeride():
     data = read_csv('../csvs/Ephemerides1.csv')
-    _float = lambda x: float(str.lower(x).replace(',', '.'))
     data[1:-1] = map(lambda line: [_float(x) for x in line], data[1:-1])
     return data[:-1]
 
 
+def get_pseudodist():
+    data = read_csv('../csvs/Pseudodist1.csv')
+    data[:] = map(lambda line: [_float(x) for x in line], data[:-1])
+    return data
+
+
 if __name__ == '__main__':
-    print(*read_csv('../csvs/Ephemerides1.csv'), sep='\n')
-    print(*get_ephemeride(), sep='\n')
+    pass

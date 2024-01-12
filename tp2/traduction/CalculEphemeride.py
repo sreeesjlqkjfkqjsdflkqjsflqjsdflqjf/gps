@@ -13,22 +13,22 @@ def CalculEphemeride(t_GPS,Ephem):
     mu = 398600500000000              # Constante liée à la gravitation de la Terre
     omegadote = 7.2921151467E-5  # Constante vitesse de rotation de la terre
 
-    toe = Ephem[1]               # Temps GPS à partir duquel les éphémérides sont valables
-    ecc = Ephem[2]               # Excentricité de la trajectoire
-    i0 = Ephem[3]                # Inclinaison à l'instant toe
-    omega0 = Ephem[4]            # Longitude du noeud ascendant
-    omega = Ephem[5]             # Argument du périgée à l'instant toe
-    M0 = Ephem[6]                # Anomalie moyenne
-    idot = Ephem[7]              # Taux de variation de l'inclinaison
-    omegadot = Ephem[8]          # Taux de variation de la longitude du noeud ascendant
-    deltan = Ephem[9]           # Correction du mouvement moyen
-    cuc = Ephem[10]              # Amplitude du cosinus de correction à l'argument de la latitude
-    cus = Ephem[11]              # Amplitude du sinus de correction à l'argument de la latitude
-    crc = Ephem[12]              # Amplitude du cosinus de correction du rayon orbital
-    crs = Ephem[13]              # Amplitude du sinus de correction du rayon orbital
-    cic = Ephem[14]              # Amplitude du cosinus de correction de l'inclinaison
-    cis = Ephem[15]              # Amplitude du sinus de correction de l'inclinaison
-    a = Ephem[16] ** 2           # Demi grand axe
+    toe = Ephem[:, 1]               # Temps GPS à partir duquel les éphémérides sont valables
+    ecc = Ephem[:, 2]               # Excentricité de la trajectoire
+    i0 = Ephem[:, 3]                # Inclinaison à l'instant toe
+    omega0 = Ephem[:, 4]            # Longitude du noeud ascendant
+    omega = Ephem[:, 5]             # Argument du périgée à l'instant toe
+    M0 = Ephem[:, 6]                # Anomalie moyenne
+    idot = Ephem[:, 7]              # Taux de variation de l'inclinaison
+    omegadot = Ephem[:, 8]          # Taux de variation de la longitude du noeud ascendant
+    deltan = Ephem[:, 9]           # Correction du mouvement moyen
+    cuc = Ephem[:, 10]              # Amplitude du cosinus de correction à l'argument de la latitude
+    cus = Ephem[:, 11]              # Amplitude du sinus de correction à l'argument de la latitude
+    crc = Ephem[:, 12]              # Amplitude du cosinus de correction du rayon orbital
+    crs = Ephem[:, 13]              # Amplitude du sinus de correction du rayon orbital
+    cic = Ephem[:, 14]              # Amplitude du cosinus de correction de l'inclinaison
+    cis = Ephem[:, 15]              # Amplitude du sinus de correction de l'inclinaison
+    a = Ephem[:, 16] ** 2           # Demi grand axe
 
     # Calcul de la position des satellites
 

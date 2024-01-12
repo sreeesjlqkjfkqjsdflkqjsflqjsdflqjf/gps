@@ -13,9 +13,6 @@ def CalculEphemeride(t_GPS,Ephem):
     mu = 398600500000000              # Constante liée à la gravitation de la Terre
     omegadote = 7.2921151467E-5  # Constante vitesse de rotation de la terre
 
-    _, toe, ecc, i0, omega0, omega, M0, idot, omegadot, deltan, cuc, cus, crc, crs, cic, cis, sqrt_a, _, _, _, _, _ = Ephem
-    a = sqrt_a ** 2
-    """
     toe = Ephem(2)               # Temps GPS à partir duquel les éphémérides sont valables
     ecc = Ephem(3)               # Excentricité de la trajectoire
     i0 = Ephem(4)                # Inclinaison à l'instant toe
@@ -31,8 +28,7 @@ def CalculEphemeride(t_GPS,Ephem):
     crs = Ephem(14)              # Amplitude du sinus de correction du rayon orbital
     cic = Ephem(15)              # Amplitude du cosinus de correction de l'inclinaison
     cis = Ephem(16)              # Amplitude du sinus de correction de l'inclinaison
-    a = Ephem(17) ** 2              # Demi grand axe
-    """
+    a = Ephem(17) ** 2           # Demi grand axe
 
     # Calcul de la position des satellites
 

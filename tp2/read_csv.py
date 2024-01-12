@@ -32,12 +32,7 @@ _float = lambda x: float(str.lower(x).replace(',', '.'))
 def get_ephemeride():
     data = read_csv('../csvs/Ephemerides1.csv')
     data[:] = map(lambda line: [_float(x) for x in line], data[1:-1])
-    return np.array(data).swapaxes(0, 1)
-
-
-def __eph(eph):
-    eph = np.array(np.array(eph[1:]).swapaxes(0, 1))
-    PRN, TOE, Ecc, I0, OMEGA0, omega, M0, idot, OMEGAdot, deltan, cuc, cus, crc, crs, cic, cis, sqrt_a, af0, af1, af2, toc, tgd = eph
+    return lambda index: np.array(data)[:, index - 1]
 
 
 def get_pseudodist():

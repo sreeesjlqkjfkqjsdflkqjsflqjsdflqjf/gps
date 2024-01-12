@@ -20,7 +20,7 @@ def ChangeRep(X,Y,Z,Xcent,Ycent,Zcent,long,lat):
 
     # on applique les rotations au point lui-même et la translation
 
-    Ptnr = pinv1@pinv@np.array([[X], [Y], [Z]]) - PtCentral
+    Ptnr = pinv1@pinv2@np.array([[X], [Y], [Z]]) - PtCentral
 
     # on met les points
     return Ptnr

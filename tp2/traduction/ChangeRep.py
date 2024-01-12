@@ -29,4 +29,4 @@ def ChangeRep(X,Y,Z,Xcent,Ycent,Zcent,long,lat):
     Ynrep = Ptnr[2]
     Znrep = Ptnr[3]
 
-    return [Xnrep, Ynrep, Znrep]
+    return np.array([Xnrep, Ynrep, Znrep])

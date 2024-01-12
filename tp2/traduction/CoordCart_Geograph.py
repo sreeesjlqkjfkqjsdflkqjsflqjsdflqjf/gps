@@ -7,7 +7,7 @@ coordonnées cartésiennes
 -------------------------------------------------------------------------
 """
 from numpy import arctan2 as atan2, arctan as atan, sin, cos
-
+import numpy as np
 
 def CoordCart_geograph(X, Y, Z):
     # function[lat, long, alt] = CoordCart_Geograph(X, Y, Z)
@@ -42,4 +42,4 @@ def CoordCart_geograph(X, Y, Z):
     lat = 180 / Pi * phi
     long = 180 / Pi * _lambda
     alt = h
-    return lat, long, alt
+    return np.array((lat, long, alt))

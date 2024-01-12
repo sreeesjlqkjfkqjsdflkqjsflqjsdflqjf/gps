@@ -6,6 +6,8 @@
 #--------------------------------------------------------------------------
 
 from numpy import sin, cos, arctan2
+import numpy as np
+
 def CalculEphemeride(t_GPS,Ephem):
 
     #Pi = 3.1415926535898  % on définit Pi avec le bon nombre de décimales
@@ -81,4 +83,4 @@ def CalculEphemeride(t_GPS,Ephem):
     Ys = xp * sin(Omegak) + yp * cos(ik) * cos(Omegak)
     Zs = yp * sin(ik)
 
-    return [Xs, Ys, Zs]
+    return np.array([Xs, Ys, Zs])

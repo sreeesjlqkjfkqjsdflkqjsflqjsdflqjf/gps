@@ -53,7 +53,7 @@ for date in temps:
         # % ** ** ** ** étape  # 2 à compléter
         date_emission_satellite = date - PRCode[sat_index, date] / c
         position_err_rotation = CalculEphemeride(date_emission_satellite, Eph)
-        position_satellite = e_r_corr(PRCode[sat_index, date])
+        position_satellite = e_r_corr(PRCode[sat_index, date], position_err_rotation)
 
         # % Calcul de la position du satellite(Référentiel ECEF)
 

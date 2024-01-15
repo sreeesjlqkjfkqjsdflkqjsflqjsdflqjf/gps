@@ -9,7 +9,8 @@
 import numpy as np
 from ..read_csv import get_ephemeride, get_pseudodist
 from .Correction_Horloge_Satellite import Correction_Horloge_Satellite
-
+from .CalculEphemeride import CalculEphemeride
+from .e_r_corr import e_r_corr
 c = 299792458  # %vitesse de la lumière
 t0_GPS = 28800  # %temps GPS initial
 
@@ -50,6 +51,9 @@ for date in temps:
         # % Calcul de la position du satellite(Repère ECEF)
 
         # % ** ** ** ** étape  # 2 à compléter
+        date_emission_satellite = date - PRCode[sat_index, date] / c
+        position_err_rotation = CalculEphemeride(date_emission_satellite, Eph)
+        position_satellite = e_r_corr(PRCode[sat_index, date])
 
         # % Calcul de la position du satellite(Référentiel ECEF)
 

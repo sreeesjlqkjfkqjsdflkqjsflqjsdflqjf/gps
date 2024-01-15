@@ -45,7 +45,8 @@ for date in temps:
         # % On calcule les erreurs d'horloge et effets relativistes, on lui retire tgd, soit le 22ième paramètre du tableau Eph et on corrige la pseudodistance
 
         # % ** ** ** ** étape  # 1 à compléter
-        horloge_corrigee = Correction_Horloge_Satellite(date, Eph) - tgd
+        correction = Correction_Horloge_Satellite(date, Eph) - tgd
+        PRCode[sat_index, date] += correction
         # % Calcul de la position du satellite(Repère ECEF)
 
         # % ** ** ** ** étape  # 2 à compléter

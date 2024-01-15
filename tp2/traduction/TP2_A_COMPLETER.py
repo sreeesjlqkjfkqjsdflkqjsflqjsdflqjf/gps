@@ -8,6 +8,7 @@
 """
 import numpy as np
 from ..read_csv import get_ephemeride, get_pseudodist
+from .Correction_Horloge_Satellite import Correction_Horloge_Satellite
 
 c = 299792458  # %vitesse de la lumière
 t0_GPS = 28800  # %temps GPS initial
@@ -44,7 +45,7 @@ for t in range(t_total):
         # % On calcule les erreurs d'horloge et effets relativistes, on lui retire tgd, soit le 22ième paramètre du tableau Eph et on corrige la pseudodistance
 
         # % ** ** ** ** étape  # 1 à compléter
-
+        horloge_corrigee = Correction_Horloge_Satellite(t0_GPS, Eph) - tgd
         # % Calcul de la position du satellite(Repère ECEF)
 
         # % ** ** ** ** étape  # 2 à compléter

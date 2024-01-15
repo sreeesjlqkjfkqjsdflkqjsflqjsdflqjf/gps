@@ -46,7 +46,7 @@ for date in temps:
 
         # % ** ** ** ** étape  # 1 à compléter
         correction = Correction_Horloge_Satellite(date, Eph) - tgd
-        PRCode[sat_index, date] += correction
+        PRCode[sat_index, date] += c * correction
         # % Calcul de la position du satellite(Repère ECEF)
 
         # % ** ** ** ** étape  # 2 à compléter

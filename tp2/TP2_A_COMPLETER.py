@@ -7,10 +7,10 @@
 %--------------------------------------------------------------------------
 """
 import numpy as np
-from ..read_csv import get_ephemeride, get_pseudodist
-from .Correction_Horloge_Satellite import Correction_Horloge_Satellite
-from .CalculEphemeride import CalculEphemeride
-from .e_r_corr import e_r_corr
+from tp2.read_csv import get_ephemeride, get_pseudodist
+from tp2.traduction.Correction_Horloge_Satellite import Correction_Horloge_Satellite
+from tp2.traduction.CalculEphemeride import CalculEphemeride
+from tp2.traduction.e_r_corr import e_r_corr
 c = 299792458  # %vitesse de la lumière
 t0_GPS = 28800  # %temps GPS initial
 
@@ -37,23 +37,23 @@ Eph = get_ephemeride()
 PRCode = get_pseudodist()
 
 for date in temps:
-
+    indice_temps = date - t0_GPS
     # %Boucle de calcul de position des satellites
 
     for sat_index in range(nSat):
-        tgd = Eph[21, sat_index]  # %Temps de groupe(retard du à l'electronique du satellite)
+        tgd = Eph[sat_index, 21]  # %Temps de groupe(retard du à l'electronique du satellite)
 
         # % On calcule les erreurs d'horloge et effets relativistes, on lui retire tgd, soit le 22ième paramètre du tableau Eph et on corrige la pseudodistance
 
         # % ** ** ** ** étape  # 1 à compléter
-        correction = Correction_Horloge_Satellite(date, Eph) - tgd
-        PRCode[sat_index, date] += c * correction
+        correction = Correction_Horloge_Satellite(date, Eph, sat_index) - tgd
+        PRCode[sat_index, indice_temps] += c * correction
         # % Calcul de la position du satellite(Repère ECEF)
 
         # % ** ** ** ** étape  # 2 à compléter
-        date_emission_satellite = date - PRCode[sat_index, date] / c
-        position_err_rotation = CalculEphemeride(date_emission_satellite, Eph)
-        position_satellite = e_r_corr(PRCode[sat_index, date], position_err_rotation)
+        date_emission_satellite = date - PRCode[sat_index, indice_temps] / c
+        position_err_rotation = CalculEphemeride(date_emission_satellite, Eph, sat_index)
+        position_satellite = e_r_corr(PRCode[sat_index, indice_temps], position_err_rotation)
 
         # % Calcul de la position du satellite(Référentiel ECEF)
 

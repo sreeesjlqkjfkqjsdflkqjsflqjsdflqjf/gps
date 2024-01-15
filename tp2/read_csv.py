@@ -42,4 +42,5 @@ def get_pseudodist():
 
 
 if __name__ == '__main__':
-    pass
+    get_pseudodist()
+    get_ephemeride()

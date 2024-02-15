@@ -83,7 +83,9 @@ def FormaterDonneesM8(t0_GPS):
                 PRCode[sat_index, time_index] = DonneesPR[time_index, 2 * sat_index]
 
     nbSatDispo = np.sum(PRCode > 0., axis=0)
-    return Ephem, DonneesPR, PRCode, nbSatDispo, t0_GPS + nb_tot-1
+    SatDispo = [np.argwhere(PRCode[:, t] > 0.).flatten() for t in range(PRCode.shape[1])]
+
+    return Ephem, DonneesPR, PRCode, satellites, SatDispo, nbSatDispo, t0_GPS + nb_tot-1
 
 
 if __name__ == '__main__':

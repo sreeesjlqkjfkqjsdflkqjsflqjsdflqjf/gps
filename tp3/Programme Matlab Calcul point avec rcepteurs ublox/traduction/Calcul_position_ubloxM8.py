@@ -18,7 +18,7 @@ def main():
     nSat = 0  # Nombre de Satellites
 
     # Formatage des données
-    Ephem, DonneesPR, PRCode, nbSatDispo, t_max = FormaterDonneesM8(t0_GPS)
+    Ephem, DonneesPR, PRCode, satellites, SatDispo, nbSatDispo, t_max = FormaterDonneesM8(t0_GPS)
 
     # Définition du temps
     temps = np.arange(t0_GPS, t_max+1)
@@ -35,8 +35,8 @@ def main():
     PositionCent = [X, Y, Z]
 
     # Pseudodistances entre le point de référence et les satellites
-    CorPRHorlSatpoint = np.zeros((nSat, t_total))
-    PosSat = np.zeros((nSat * 3, t_total))
+    CorPRHorlSatpoint = np.zeros((nSat, temps.size))
+    PosSat = np.zeros((nSat * 3, temps.size))
 
     # Calcul de la position du point avec le code et les positions des satellites
     CalculPosSats()
@@ -47,8 +47,8 @@ def main():
     Zcent = PositionCent[2]
 
     # Calcul de l'erreur horizontale
-    ErreurPositionH = np.zeros((2, t_total))
-    ErreurPositionV = np.zeros((1, t_total))
+    ErreurPositionH = np.zeros((2, temps.size))
+    ErreurPositionV = np.zeros((1, temps.size))
 
     for t in range(t_total):
 

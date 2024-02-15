@@ -11,6 +11,7 @@ from read_csv import get_ephemeride, get_pseudodist
 from traduction.Correction_Horloge_Satellite import Correction_Horloge_Satellite
 from traduction.CalculEphemeride import CalculEphemeride
 from traduction.e_r_corr import e_r_corr
+
 c = 299792458  # %vitesse de la lumière
 t0_GPS = 28800  # %temps GPS initial
 

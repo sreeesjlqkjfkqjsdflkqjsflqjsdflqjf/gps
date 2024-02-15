@@ -8,7 +8,7 @@ LIGHT_SPEED = 3.e8
 COS_TH_MAX = RT / SAT_DISTANCE
 
 
-def solve_receptor_position(s1, s2, s3, s4, rho1, rho2, rho3, rho4, epsilon=1e-6, real_position=(0, 0, RT, 0)):
+def solve_receptor_position(s1, s2, s3, s4, rho1, rho2, rho3, rho4, epsilon=1e-6, real_position=(0, 0, RT, 0), max_iteration=1000):
     phi_sat, theta_sat = np.array((s1, s2, s3, s4)).transpose()
     x_sat = SAT_DISTANCE * np.cos(phi_sat) * np.sin(theta_sat)
     y_sat = SAT_DISTANCE * np.sin(phi_sat) * np.sin(theta_sat)
@@ -18,9 +18,9 @@ def solve_receptor_position(s1, s2, s3, s4, rho1, rho2, rho3, rho4, epsilon=1e-6
     # print(z_sat / RT)
     r_x, r_y, r_z, r_t = 0., 0., 0, 0.
 
-    iterating = True
+    iterating, cnt = True, 0
 
-    while iterating:
+    while iterating and cnt < max_iteration:
         try:
             # print('receptor position', f'{r_x = :.3e}, {r_y:.3e}, {r_z:.3e}, {r_t:.3e}')
             r = ((x_sat - r_x) ** 2 + (y_sat - r_y) ** 2 + (z_sat - r_z) ** 2) ** .5
@@ -43,13 +43,14 @@ def solve_receptor_position(s1, s2, s3, s4, rho1, rho2, rho3, rho4, epsilon=1e-6
             # print(f'{dx = }')
             r_x, r_y, r_z, r_t = dx * (1, 1, 1, -1) + (r_x, r_y, r_z, r_t)
             iterating = np.sum(dx ** 2) ** .5 > epsilon
+            cnt += 1
         except Exception:
             iterating = False
-    print('Final receptor position', f'{r_x = :.3e}, {r_y:.3e}, {r_z:.3e}, {r_t/LIGHT_SPEED:.3e}')
-    err = np.array((r_x, r_y, r_z, r_t)) - real_position * np.array((1., 1., 1., LIGHT_SPEED))
-    print(f'Error: {sum(err ** 2) ** .5:.3e}, {sum(err[:3] ** 2) ** .5 * 1e-3:.3e} km, {abs(err[3]) / LIGHT_SPEED:.3e} s')
+    # print('Final receptor position', f'{r_x = :.3e}, {r_y:.3e}, {r_z:.3e}, {r_t/LIGHT_SPEED:.3e}')
+    # err = np.array((r_x, r_y, r_z, r_t)) - real_position * np.array((1., 1., 1., LIGHT_SPEED))
+    # print(f'Error: {sum(err ** 2) ** .5:.3e}, {sum(err[:3] ** 2) ** .5 * 1e-3:.3e} km, {abs(err[3]) / LIGHT_SPEED:.3e} s')
     r = (r_x ** 2 + r_y ** 2 + r_z ** 2) ** .5
-    print(f'{r / RT= }')
+    # print(f'{r / RT= }')
     r_phi = np.arctan2(r_x, r_y)
     r_theta = np.arccos(r_z / r)
     # r_phi = np.arccos(r_x / r / np.sin(r_theta)) * (2 * (r_y > 0) - 1)
@@ -164,6 +165,44 @@ def test_4sat():
     plt.show()
 
 
+def test_q11():
+    theta = np.arccos(COS_TH_MAX)
+    print(90. - np.arctan(SAT_DISTANCE * np.sin(theta * .5) / (SAT_DISTANCE * np.cos(theta * .5) - RT)) * 180 / np.pi)
+
+    xy_err = []
+    rho_err = []
+    t_err = []
+
+    _theta = np.linspace(theta - 1e-7, 0, 1000, endpoint=False)
+    elevation = 90. - np.arctan(SAT_DISTANCE * np.sin(_theta) / (SAT_DISTANCE * np.cos(_theta) - RT)) * 180 / np.pi
+    for th in _theta:
+        # if abs(th - theta * .5) < 1e-3:
+        #     xy_err.append(np.nan)
+        #     rho_err.append(np.nan)
+        #     t_err.append(np.nan)
+        #     continue
+        s1 = 3 * np.pi * .25, th
+        s2 = 0, 0
+        s3 = -3 * np.pi * .25, th
+        s4 = 0, th
+        r1, r2, r3, r4 = make_distances(s1, s2, s3, s4, dt=0.)
+        r_phi, r_theta, r_alt, dt = solve_receptor_position(s1, s2, s3, s4, r1, r2, r3, r4)
+        xy_err.append((RT + r_alt) * np.sin(r_theta))
+        rho_err.append(abs(r_alt))
+        t_err.append(abs(dt))
+    fig, ax = plt.subplots(1, 3)
+    ax[0].plot(elevation, xy_err, color='b')
+    ax[0].set_xlabel('Elevation (°)')
+    ax[0].set_ylabel('Erreur 2D (m)')
+    ax[1].plot(elevation, rho_err, color='r')
+    ax[1].set_xlabel('Elevation (°)')
+    ax[1].set_ylabel('Erreur d\'altitude (m)')
+    ax[2].plot(elevation, t_err, color='g')
+    ax[2].set_xlabel('Elevation (°)')
+    ax[2].set_ylabel('Erreur d\'horloge (s)')
+    plt.show()
+
+
 def test_any_sat(n):
     rng = np.random.default_rng()
     fig = plt.figure()
@@ -196,4 +235,5 @@ def test_any_sat(n):
 
 
 if __name__ == '__main__':
-    test_any_sat(7)
+    # test_any_sat(7)
+    test_q11()

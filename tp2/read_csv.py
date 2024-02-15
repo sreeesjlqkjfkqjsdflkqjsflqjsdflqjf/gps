@@ -17,11 +17,11 @@ def fuse_values(line: list[str]):
     return res
 
 
-def read_csv(file):
+def read_csv(file, line_split='\n', value_split=','):
     with open(file, 'r') as csv:
         data = csv.read()
-    lines = data.split('\n')
-    lines = map(lambda line: line.split(','), lines)
+    lines = data.split(line_split)
+    lines = map(lambda line: line.split(value_split), lines)
     lines = map(lambda line: fuse_values(line), lines)
     return list(lines)
 

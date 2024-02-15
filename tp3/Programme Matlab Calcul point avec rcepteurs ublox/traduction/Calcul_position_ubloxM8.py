@@ -4,8 +4,12 @@
 #
 # --------------------------------------------------------------------------
 
-def main():
+from FormaterDonneesM8 import FormaterDonneesM8
+from CoordGeograph_Cart import CoordGeograph_Cart
+import numpy as np
 
+
+def main():
     # Définition des constantes
     c = 299792458  # vitesse de la lumière
     f = 1575420000  # fréquence L1
@@ -14,10 +18,10 @@ def main():
     nSat = 0  # Nombre de Satellites
 
     # Formatage des données
-    FormaterDonneesM8()
+    Ephem, DonneesPR, PRCode, nbSatDispo, t_max = FormaterDonneesM8(t0_GPS)
 
     # Définition du temps
-    temps = np.arange(t0_GPS, t0_GPS+t_total)
+    temps = np.arange(t0_GPS, t_max+1)
 
     # Définition de la position vraie
     lat = 48.71368917

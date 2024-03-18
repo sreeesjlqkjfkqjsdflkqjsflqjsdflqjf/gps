@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from affichage import *
+from TP1.affichage import *
 
 RT = 6400e3
 SAT_DISTANCE = RT + 20200e3
@@ -8,11 +8,16 @@ LIGHT_SPEED = 3.e8
 COS_TH_MAX = RT / SAT_DISTANCE
 
 
-def solve_receptor_position(s1, s2, s3, s4, rho1, rho2, rho3, rho4, epsilon=1e-6, real_position=(0, 0, RT, 0), max_iteration=1000):
+def solve_receptor_position(rng, s1, s2, s3, s4, rho1, rho2, rho3, rho4, epsilon=1e-6, real_position=(0, 0, RT, 0), max_iteration=1000, rho=1., use_err=False):
     phi_sat, theta_sat = np.array((s1, s2, s3, s4)).transpose()
     x_sat = SAT_DISTANCE * np.cos(phi_sat) * np.sin(theta_sat)
     y_sat = SAT_DISTANCE * np.sin(phi_sat) * np.sin(theta_sat)
     z_sat = SAT_DISTANCE * np.cos(theta_sat)
+    if use_err:
+        x_err, y_err, z_err = random_spherical_point(rng, rho, 4)
+        x_sat += x_err
+        y_sat += y_err
+        z_sat += z_err
     # print(x_sat / RT)
     # print(y_sat / RT)
     # print(z_sat / RT)
@@ -120,6 +125,12 @@ def random_visible_satellite(rng):
     # return SAT_DISTANCE * np.array([cos(phi) * sin(theta), sin(phi) * sin(theta), cos(theta)])
 
 
+def random_spherical_point(rng, rho=1., num_points=1):
+    theta = np.arccos(1 - 2 * rng.random(num_points))
+    phi = 2 * np.pi * rng.random(num_points)
+    return np.array(rho) * (np.cos(phi) * np.sin(theta), np.sin(phi) * np.sin(theta), np.cos(theta))
+
+
 def spheric_to_cartesian(phi, theta, rho):
     return rho * np.array((cos(phi) * sin(theta), sin(phi) * sin(theta), cos(theta)))
 
@@ -153,10 +164,9 @@ def test_4sat():
     s1, s2, s3, s4 = [random_visible_satellite(rng) for _ in range(4)]
     r1, r2, r3, r4 = make_distances(s1, s2, s3, s4, dt=0.)
     try:
-        r_phi, r_theta, r_alt, dt = solve_receptor_position(s1, s2, s3, s4, r1, r2, r3, r4)
+        r_phi, r_theta, r_alt, dt = solve_receptor_position(rng, s1, s2, s3, s4, r1, r2, r3, r4)
         placepoint(spheric_to_cartesian(r_phi, r_theta, r_alt + RT + 1e3) / RT, ax, 'Red')
     except Exception as e:
-
         print(e)
     for sat in s1, s2, s3, s4:
         # print('sats : ', spheric_to_cartesian(*sat, SAT_DISTANCE / RT))
@@ -166,8 +176,16 @@ def test_4sat():
 
 
 def test_q11():
+    rng = np.random.default_rng()
     theta = np.arccos(COS_TH_MAX)
+    th = theta * .5
     print(90. - np.arctan(SAT_DISTANCE * np.sin(theta * .5) / (SAT_DISTANCE * np.cos(theta * .5) - RT)) * 180 / np.pi)
+
+    s1 = 3 * np.pi * .25, th
+    s2 = 0, 0
+    s3 = -3 * np.pi * .25, th
+    s4 = 0, th
+    r1, r2, r3, r4 = make_distances(s1, s2, s3, s4, dt=0.)
 
     xy_err = []
     rho_err = []
@@ -175,30 +193,35 @@ def test_q11():
 
     _theta = np.linspace(theta - 1e-7, 0, 1000, endpoint=False)
     elevation = 90. - np.arctan(SAT_DISTANCE * np.sin(_theta) / (SAT_DISTANCE * np.cos(_theta) - RT)) * 180 / np.pi
-    for th in _theta:
+
+    n = 200
+    rhos = np.linspace(0, 20, 100)
+    for rho in rhos:
+        _xy = 0.
+        _rho = 0.
+        _t = 0.
         # if abs(th - theta * .5) < 1e-3:
         #     xy_err.append(np.nan)
         #     rho_err.append(np.nan)
         #     t_err.append(np.nan)
         #     continue
-        s1 = 3 * np.pi * .25, th
-        s2 = 0, 0
-        s3 = -3 * np.pi * .25, th
-        s4 = 0, th
-        r1, r2, r3, r4 = make_distances(s1, s2, s3, s4, dt=0.)
-        r_phi, r_theta, r_alt, dt = solve_receptor_position(s1, s2, s3, s4, r1, r2, r3, r4)
-        xy_err.append((RT + r_alt) * np.sin(r_theta))
-        rho_err.append(abs(r_alt))
-        t_err.append(abs(dt))
+        for _ in range(n):
+            r_phi, r_theta, r_alt, dt = solve_receptor_position(rng, s1, s2, s3, s4, r1, r2, r3, r4, rho=rho, use_err=True)
+            _xy += (RT + r_alt) * np.sin(r_theta)
+            _rho += abs(r_alt)
+            _t += abs(dt)
+        xy_err.append(_xy / n)
+        rho_err.append(_rho / n)
+        t_err.append(_t / n)
     fig, ax = plt.subplots(1, 3)
-    ax[0].plot(elevation, xy_err, color='b')
-    ax[0].set_xlabel('Elevation (°)')
+    ax[0].plot(rhos, xy_err, color='b')
+    ax[0].set_xlabel('Rayon erreur (m)')
     ax[0].set_ylabel('Erreur 2D (m)')
-    ax[1].plot(elevation, rho_err, color='r')
-    ax[1].set_xlabel('Elevation (°)')
+    ax[1].plot(rhos, rho_err, color='r')
+    ax[1].set_xlabel('Rayon erreur (m)')
     ax[1].set_ylabel('Erreur d\'altitude (m)')
-    ax[2].plot(elevation, t_err, color='g')
-    ax[2].set_xlabel('Elevation (°)')
+    ax[2].plot(rhos, t_err, color='g')
+    ax[2].set_xlabel('Rayon erreur (m)')
     ax[2].set_ylabel('Erreur d\'horloge (s)')
     plt.show()
 

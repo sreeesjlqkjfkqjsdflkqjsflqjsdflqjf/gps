@@ -45,17 +45,15 @@ for date in temps:
         tgd = Eph[sat_index, 21]  # %Temps de groupe(retard du à l'electronique du satellite)
 
         # % On calcule les erreurs d'horloge et effets relativistes, on lui retire tgd, soit le 22ième paramètre du tableau Eph et on corrige la pseudodistance
-
         # % ** ** ** ** étape  # 1 à compléter
         correction = Correction_Horloge_Satellite(date, Eph, sat_index) - tgd
         PRCode[sat_index, indice_temps] += c * correction
-        # % Calcul de la position du satellite(Repère ECEF)
 
+        # % Calcul de la position du satellite(Repère ECEF)
         # % ** ** ** ** étape  # 2 à compléter
         date_emission_satellite = date - PRCode[sat_index, indice_temps] / c
         position_err_rotation = CalculEphemeride(date_emission_satellite, Eph, sat_index)
-        position_satellite = e_r_corr(PRCode[sat_index, indice_temps], position_err_rotation)
 
         # % Calcul de la position du satellite(Référentiel ECEF)
-
         # % ** ** ** ** étape  # 3 à compléter
+        position_satellite = e_r_corr(PRCode[sat_index, indice_temps] / c, position_err_rotation)
